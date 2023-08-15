@@ -1,5 +1,6 @@
 ﻿using Almaz.AssetManagement.Domain;
 using Almaz.AssetManagement.Web.Endpoints.CategoriesEndpoints.ViewModel;
+using Almaz.AssetManagement.Web.Exceptions;
 using Calabonga.OperationResults;
 using Calabonga.UnitOfWork;
 using MediatR;
@@ -12,21 +13,22 @@ using System.Threading.Tasks;
 
 namespace Almaz.AssetManagement.Web.Endpoints.CategoriesEndpoints.Queries
 {
-    public record CategoryCreateRequest(CategoryCreateViewModel Model) : 
-        IRequest<OperationResult<CategoryCreateRequest>>;
+    public record CategoryCreateRequest(CategoryCreateViewModel Model)
+    : IRequest<OperationResult<CategoryViewModel>>;
 
-    public class CategoryCreateRequestHandler : 
-        IRequestHandler<CategoryCreateRequest, OperationResult<CategoryCreateRequest>>
+    public class CategoryCreateRequestHandler
+        : IRequestHandler<CategoryCreateRequest, OperationResult<CategoryViewModel>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public CategoryCreateRequestHandler(IUnitOfWork unitOfWork) 
+        public CategoryCreateRequestHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<OperationResult<CategoryCreateRequest>> Handle
-            (
-            CategoryCreateRequest request, 
+
+        public async Task<OperationResult<CategoryViewModel>> Handle
+        (
+            CategoryCreateRequest request,
             CancellationToken cancellationToken)
         {
             var operation = OperationResult.CreateResult<CategoryViewModel>();
@@ -35,35 +37,31 @@ namespace Almaz.AssetManagement.Web.Endpoints.CategoriesEndpoints.Queries
             var category = new Category
             {
                 Name = request.Model.Name,
-                Description= request.Model.Description,
+                Description = request.Model.Description
             };
 
             await repository.InsertAsync(category, cancellationToken);
+            await _unitOfWork.SaveChangesAsync();
 
-            if(!_unitOfWork.LastSaveChangesResult.IsOk)
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
-                operation.AddError(_unitOfWork.LastSaveChangesResult.Exception?? new CatalogDataBaseSaveExaption()
+                operation.AddError(_unitOfWork.LastSaveChangesResult.Exception ?? new CatalogDatabaseSaveException("Saving data error"));
+                return operation;
             }
+
+            operation.Result = new CategoryViewModel
+            {
+                Id = category.Id,
+                Name = category.Name,
+                Description = category.Description,
+                ProductCount = 0
+            };
+
+            return operation;
         }
+
     }
 
-    [Serializable]
-    internal class CatalogDataBaseSaveExaption : Exception
-    {
-        public CatalogDataBaseSaveExaption()
-        {
-        }
-
-        public CatalogDataBaseSaveExaption(string? message) : base(message)
-        {
-        }
-
-        public CatalogDataBaseSaveExaption(string? message, Exception? innerException) : base(message, innerException)
-        {
-        }
-
-        protected CatalogDataBaseSaveExaption(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
-    }
 }
+
+

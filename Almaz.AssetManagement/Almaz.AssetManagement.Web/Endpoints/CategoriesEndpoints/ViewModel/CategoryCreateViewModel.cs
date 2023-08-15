@@ -1,6 +1,15 @@
 ﻿namespace Almaz.AssetManagement.Web.Endpoints.CategoriesEndpoints.ViewModel
 {
-    internal class CategoryCreateViewModel
+    public class CategoryCreateViewModel
     {
+        /// <summary>
+        /// Name of the catalog
+        /// </summary>
+        public string Name { get; set; } = null!;
+
+        /// <summary>
+        /// Description for current catalog
+        /// </summary>
+        public string? Description { get; set; }
     }
 }
