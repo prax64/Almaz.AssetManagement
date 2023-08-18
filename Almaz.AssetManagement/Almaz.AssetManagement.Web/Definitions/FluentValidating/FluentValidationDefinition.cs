@@ -18,7 +18,7 @@ namespace Almaz.AssetManagement.Web.Definitions.FluentValidating
         {
             services.Configure<ApiBehaviorOptions>(options =>
             {
-                options.SuppressModelStateInvalidFilter = true;
+                    options.SuppressModelStateInvalidFilter = true;
             });
 
             services.AddValidatorsFromAssembly(typeof(Program).Assembly);

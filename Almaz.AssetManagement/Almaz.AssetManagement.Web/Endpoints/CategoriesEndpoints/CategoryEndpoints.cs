@@ -13,8 +13,8 @@ namespace Almaz.AssetManagement.Web.Endpoints.CategoriesEndpoints
     {
         public override void ConfigureApplication(WebApplication app)
         {
-            app.MapGet("/api/catalogs/get-all", GetAllCategories);
-            app.MapPost("/api/catalogs/create", CreateCategory);
+            app.MapGet("/api/categories/get-all", GetAllCategories);
+            app.MapPost("/api/categories/create", CreateCategory);
 
 
         }
@@ -41,7 +41,7 @@ namespace Almaz.AssetManagement.Web.Endpoints.CategoriesEndpoints
             {
                 return TypedResults.Created($"/api/categories/{operation.Result!.Id}", operation.Result);
             }
-            return TypedResults.BadRequest();
+            return TypedResults.BadRequest(operation.Exception);
         }
     }
 }

@@ -4,12 +4,6 @@ using Almaz.AssetManagement.Web.Exceptions;
 using Calabonga.OperationResults;
 using Calabonga.UnitOfWork;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Almaz.AssetManagement.Web.Endpoints.CategoriesEndpoints.Queries
 {
